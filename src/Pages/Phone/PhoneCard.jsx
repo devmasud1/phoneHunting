@@ -3,7 +3,6 @@ const PhoneCard = ({ phone }) => {
 
   const handleAddToCart = () => {
     const addedCartArray = [];
-    console.log(addedCartArray);
 
     const cartItem = JSON.parse(localStorage.getItem("cart"));
 

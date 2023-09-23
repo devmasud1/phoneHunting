@@ -3,35 +3,63 @@ import FavoritesCard from "./FavoritesCard";
 
 const Favorites = () => {
   const [phones, setPhones] = useState([]);
-  const [notFound, setNotFound] = useState(false);
+  const [notFound, setNotFound] = useState("");
   const [isShow, setIsShow] = useState(false);
 
   useEffect(() => {
     const cartItem = JSON.parse(localStorage.getItem("cart"));
 
-    if (cartItem) {
-      setPhones(cartItem);
-    } else {
+    if (!cartItem || cartItem.length === 0) {
       setNotFound("No Data Found");
+    } else {
+      setPhones(cartItem);
     }
   }, []);
+
+  const handleRemove = (id) => {
+    const localStorageCart = JSON.parse(localStorage.getItem("cart"));
+
+    const itemToRemove = localStorageCart.find((item) => item.id === id);
+
+    if (itemToRemove) {
+      localStorage.removeItem(String(id));
+
+      const updatedCart = localStorageCart.filter((item) => item.id !== id);
+
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      setPhones(updatedCart);
+
+      if (updatedCart.length === 0) {
+        setNotFound("No Data Found");
+      }
+    }
+  };
+
   return (
     <div className="my-10">
       {notFound ? (
-        <p className="h-[80vh] flex justify-center items-center text-2xl font-semibold">
+        <p className="h-[80vh] flex justify-center items-center text-2xl font-bold">
           {notFound}
         </p>
       ) : (
         <div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 my-10 ">
             {isShow
-              ? phones.map((phone) => (
-                  <FavoritesCard key={phone.id} phone={phone}></FavoritesCard>
+              ? phones?.map((phone) => (
+                  <FavoritesCard
+                    key={phone.id}
+                    phone={phone}
+                    handleRemove={handleRemove}
+                  ></FavoritesCard>
                 ))
               : phones
                   .slice(0, 3)
-                  .map((phone) => (
-                    <FavoritesCard key={phone.id} phone={phone}></FavoritesCard>
+                  ?.map((phone) => (
+                    <FavoritesCard
+                      key={phone.id}
+                      phone={phone}
+                      handleRemove={handleRemove}
+                    ></FavoritesCard>
                   ))}
           </div>
           {phones.length > 2 && (
